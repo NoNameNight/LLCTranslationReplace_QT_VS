@@ -70,6 +70,15 @@ static bool coreFunc(
 	int copy_file = 0;
 	while (src_it.hasNext())
 	{
+		NObjectHelper count_helper(
+			nullptr,
+			[&]() {
+				now_count++;
+				if (one_finished) { one_finished(all_count, now_count); }
+				QCoreApplication::processEvents(); // 处理事件循环
+			}
+		);
+
 		QString _src_file_path = src_it.next();
 		QString _relative_file_dir =
 			src_dir.relativeFilePath(QFileInfo(_src_file_path).absolutePath());
@@ -213,10 +222,6 @@ static bool coreFunc(
 		//_write_stream.setEncoding(QStringConverter::Utf8);
 		//_write_stream << _write_doc.toJson();
 		//_write_file.close();
-
-		now_count++;
-		if (one_finished) { one_finished(all_count, now_count); }
-		QCoreApplication::processEvents(); // 处理事件循环
 	}
 	qDebug() << "copy file: " << copy_file;
 	return true;
